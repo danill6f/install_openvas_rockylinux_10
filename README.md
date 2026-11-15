@@ -33,6 +33,9 @@ sudo bash scripts/01-prepare-system.sh
 | [3] | Desabilita o SELinux (runtime, `/etc/selinux/config` e `selinux=0` no kernel) |
 | [4] | Atualiza o sistema (`dnf upgrade`) |
 | [5] | Define DNS: `8.8.8.8`, `8.8.4.4`, `1.1.1.1` |
+| [6] | Verifica se o `wget` está instalado (instala se faltar) |
+| [7] | Habilita os repositórios CRB e EPEL |
+| [8] | Habilita o repositório Atomicorp (instalador oficial, assumindo "yes") |
 
 Cada bloco segue o fluxo **verifica → aplica (só se necessário) → valida**, então o script pode ser executado mais de uma vez com segurança.
 

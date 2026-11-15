@@ -10,6 +10,9 @@
 #    [3] Desabilitar SELinux
 #    [4] Atualizar o sistema
 #    [5] Definir DNS (Google + Cloudflare)
+#    [6] Verificar/instalar wget
+#    [7] Habilitar repositorios CRB e EPEL
+#    [8] Habilitar repositorio Atomicorp
 #
 #  Cada bloco segue: VERIFICA -> APLICA (so se necessario) -> VALIDA
 # =============================================================================
@@ -256,6 +259,71 @@ else
 fi
 
 # =============================================================================
+# [6] VERIFICAR / INSTALAR WGET
+# =============================================================================
+block "[6] Verificar wget"
+
+if command -v wget >/dev/null; then
+    ok "wget ja instalado ($(wget --version | head -1))"
+else
+    info "wget nao encontrado. Instalando..."
+    dnf -y install wget >/dev/null
+    command -v wget >/dev/null && ok "wget instalado" || fail "Falha ao instalar wget"
+fi
+
+# =============================================================================
+# [7] HABILITAR REPOSITORIOS CRB E EPEL
+# =============================================================================
+block "[7] Repositorios CRB e EPEL"
+
+# 7.1 CRB (CodeReady Builder)
+if dnf repolist --enabled 2>/dev/null | grep -qw '^crb'; then
+    ok "Repositorio CRB ja habilitado"
+else
+    dnf config-manager --set-enabled crb
+    info "Repositorio CRB habilitado"
+fi
+dnf repolist --enabled | grep -qw '^crb' && ok "CRB ativo" || fail "CRB nao esta ativo"
+
+# 7.2 EPEL
+if rpm -q epel-release &>/dev/null; then
+    ok "epel-release ja instalado ($(rpm -q epel-release))"
+else
+    dnf -y install epel-release >/dev/null
+    info "epel-release instalado"
+fi
+dnf repolist --enabled | grep -qw '^epel' && ok "EPEL ativo" || fail "EPEL nao esta ativo"
+
+# =============================================================================
+# [8] HABILITAR REPOSITORIO ATOMICORP
+# =============================================================================
+#  O instalador oficial pergunta se aceita os termos e se habilita o repo.
+#  NON_INT=1 ativa o modo nao interativo e "yes" responde a qualquer
+#  pergunta restante, assumindo SIM para tudo.
+# =============================================================================
+block "[8] Repositorio Atomicorp"
+
+if rpm -q atomic-release &>/dev/null; then
+    ok "Atomicorp ja instalado ($(rpm -q atomic-release))"
+else
+    ATOMIC_SH=$(mktemp /tmp/atomic-installer.XXXXXX.sh)
+    info "Baixando instalador Atomicorp..."
+    wget -q -O "$ATOMIC_SH" https://updates.atomicorp.com/installers/atomic \
+        || fail "Falha ao baixar https://updates.atomicorp.com/installers/atomic"
+    [[ -s "$ATOMIC_SH" ]] || fail "Instalador Atomicorp vazio"
+
+    info "Executando instalador (respondendo 'yes' automaticamente)..."
+    NON_INT=1 bash "$ATOMIC_SH" < <(yes) | tee -a "$LOG_FILE"
+    rm -f "$ATOMIC_SH"
+fi
+
+if rpm -q atomic-release &>/dev/null || [[ -f /etc/yum.repos.d/atomic.repo ]]; then
+    ok "Repositorio Atomicorp configurado"
+else
+    fail "Repositorio Atomicorp nao foi configurado"
+fi
+
+# =============================================================================
 # RESUMO
 # =============================================================================
 block "Resumo"
@@ -264,6 +332,8 @@ ok "firewalld ... desabilitado"
 ok "SELinux ..... $(getenforce) (disabled apos reboot)"
 ok "Sistema ..... atualizado"
 ok "DNS ......... $DNS_SERVERS"
+ok "wget ........ instalado"
+ok "Repos ....... CRB, EPEL, Atomicorp"
 info "Log completo: $LOG_FILE"
 [[ -d "$BACKUP_DIR" ]] && info "Backups em: $BACKUP_DIR"
 
