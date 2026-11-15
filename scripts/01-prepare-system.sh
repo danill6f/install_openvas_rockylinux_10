@@ -198,10 +198,10 @@ fi
 block "[4] Atualizar o sistema"
 
 info "Verificando atualizacoes disponiveis..."
-set +e
-dnf -q check-update >/dev/null
-rc=$?
-set -e
+# check-update retorna 100 quando ha atualizacoes. O "|| rc=$?" captura o
+# codigo sem disparar o trap ERR (que dispara mesmo com "set +e").
+rc=0
+dnf -q check-update >/dev/null || rc=$?
 
 case $rc in
     0)   ok "Sistema ja esta atualizado" ;;
