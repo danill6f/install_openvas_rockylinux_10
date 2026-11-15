@@ -16,7 +16,8 @@ Este repositório contém scripts para instalar o OpenVAS em duas modalidades:
 install_openvas_rockylinux_10/
 ├── README.md
 ├── scripts/
-│   └── 01-prepare-system.sh   # preparação do sistema
+│   ├── 01-prepare-system.sh   # preparação do sistema
+│   └── 02-install-openvas.sh  # instalação do OpenVAS/GVM
 ├── docker/                    # instalação via Docker (em breve)
 └── lab/                       # container Rocky Linux 10.2 para testes (ver lab/README.md)
 ```
@@ -48,6 +49,27 @@ Cada bloco segue o fluxo **verifica → aplica (só se necessário) → valida**
 - Backups de arquivos alterados: `/root/openvas-install-backup/<data>/`
 
 > **Reboot:** no Rocky Linux 9+ o SELinux só é desabilitado por completo após reiniciar com `selinux=0` no kernel. O script avisa ao final quando o reboot for necessário.
+
+## Etapa 02 — Instalação do OpenVAS / GVM
+
+Execute após a etapa 01 **e o reboot**:
+
+```bash
+sudo bash scripts/02-install-openvas.sh
+```
+
+| Bloco | Ação |
+|---|---|
+| [0] | Pré-checagens: root, Rocky Linux 10.2, repositório Atomicorp, SELinux fora de Enforcing |
+| [1] | Verifica espaço em disco: **mínimo 50 GB livres** em `/var/lib` |
+| [2] | Verifica se o `gvm` já está instalado e se o `gvm-setup` já foi executado |
+| [3] | `dnf install -y gvm` (somente se não estiver instalado) |
+| [4] | `gvm-setup` (somente se ainda não foi executado) |
+| [5] | Valida os serviços (`redis`, `gvmd`, `gsad`, `ospd-openvas`) e a porta 9392 |
+
+> O `gvm-setup` baixa os feeds de vulnerabilidades e pode levar de 30 minutos a algumas horas. Não interrompa.
+
+Ao final, acesse: `https://<ip-do-servidor>:9392`
 
 ## Aviso
 
