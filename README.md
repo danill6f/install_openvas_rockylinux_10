@@ -17,7 +17,8 @@ install_openvas_rockylinux_10/
 ├── README.md
 ├── scripts/
 │   └── 01-prepare-system.sh   # preparação do sistema
-└── docker/                    # instalação via Docker (em breve)
+├── docker/                    # instalação via Docker (em breve)
+└── lab/                       # container Rocky Linux 10.2 para testes (ver lab/README.md)
 ```
 
 ## Etapa 01 — Preparação do sistema

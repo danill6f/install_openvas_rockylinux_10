@@ -1,0 +1,18 @@
+services:
+  rocky10:
+    build: .
+    image: openvas-lab-rocky10.2
+    container_name: rocky10-lab
+    hostname: rocky10-lab
+    privileged: true          # necessario para o systemd rodar no container
+    cgroup: host
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ../:/opt/install_openvas_rockylinux_10   # repositorio montado dentro do container
+    ports:
+      - "9392:9392"           # interface web do Greenbone (GSA)
+    restart: unless-stopped
