@@ -39,6 +39,7 @@ sudo bash scripts/01-prepare-system.sh
 | [6] | Verifica se o `wget` está instalado (instala se faltar) |
 | [7] | Habilita os repositórios CRB e EPEL |
 | [8] | Habilita o repositório Atomicorp (instalador oficial, assumindo "yes") |
+| Final | Pergunta se deseja reiniciar o servidor agora (`s/N`) |
 
 Cada bloco segue o fluxo **verifica → aplica (só se necessário) → valida**, então o script pode ser executado mais de uma vez com segurança.
 

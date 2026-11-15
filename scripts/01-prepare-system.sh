@@ -341,8 +341,29 @@ ok "Repos ....... CRB, EPEL, Atomicorp"
 info "Log completo: $LOG_FILE"
 [[ -d "$BACKUP_DIR" ]] && info "Backups em: $BACKUP_DIR"
 
+# =============================================================================
+# REBOOT
+# =============================================================================
+block "Reboot"
+
 if [[ $REBOOT_REQUIRED -eq 1 ]]; then
-    echo
-    warn "REBOOT NECESSARIO antes de prosseguir com a instalacao do OpenVAS."
-    warn "Execute: reboot"
+    warn "REBOOT NECESSARIO para aplicar SELinux/kernel antes de instalar o OpenVAS."
+else
+    info "Recomendado reiniciar para garantir que todas as alteracoes sejam aplicadas."
+fi
+
+if [[ -t 0 ]]; then
+    read -r -p "Deseja reiniciar o servidor agora? [s/N]: " resp
+    case "${resp,,}" in
+        s|sim|y|yes)
+            info "Reiniciando em 5 segundos... (Ctrl+C para cancelar)"
+            sleep 5
+            systemctl reboot
+            ;;
+        *)
+            warn "Reboot adiado. Reinicie manualmente antes de continuar: reboot"
+            ;;
+    esac
+else
+    warn "Execucao nao interativa: reinicie manualmente antes de continuar: reboot"
 fi
