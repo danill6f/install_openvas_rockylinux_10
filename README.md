@@ -1,6 +1,9 @@
-# install_openvas_rockylinux_10
+# How to install OpenVAS on Rocky Linux 10.2
 
-How to install OpenVAS (Greenbone Community Edition) on Rocky Linux 10.
+Instalação do OpenVAS (Greenbone Community Edition) no Rocky Linux 10.2.
+
+> **Observação:** os scripts deste repositório foram testados **somente no Rocky Linux 10.2**.
+> Não garantimos o funcionamento em outras versões do Rocky Linux ou em outras distribuições.
 
 Este repositório contém scripts para instalar o OpenVAS em duas modalidades:
 

@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
 #  install_openvas_rockylinux_10
-#  Etapa 01 - Preparacao do sistema (Rocky Linux 10)
+#  Etapa 01 - Preparacao do sistema (Rocky Linux 10.2)
+#
+#  OBS.: testado somente no Rocky Linux 10.2. Nao garantimos o
+#        funcionamento em outras versoes.
 #
 #  Blocos:
 #    [0] Pre-checagens (root, SO, rede)
@@ -59,8 +62,9 @@ ok "Executando como root"
 if [[ "${ID:-}" != "rocky" ]]; then
     fail "SO detectado: ${PRETTY_NAME:-desconhecido}. Este script e para Rocky Linux."
 fi
-if [[ "${VERSION_ID%%.*}" != "10" ]]; then
-    warn "Versao detectada: ${VERSION_ID}. Script testado para Rocky Linux 10."
+if [[ "${VERSION_ID:-}" != "10.2" ]]; then
+    warn "Versao detectada: ${VERSION_ID:-desconhecida}. Script testado somente no Rocky Linux 10.2."
+    warn "O funcionamento em outras versoes nao e garantido."
 else
     ok "SO: ${PRETTY_NAME}"
 fi
